@@ -23,6 +23,10 @@ public class Student {
     private String name;
     private String email;
     private LocalDate dob;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private Boolean deleted = false;
+
     @Transient
     private Integer age;
 
@@ -37,6 +41,7 @@ public class Student {
         this.name = name;
         this.email = email;
         this.dob = dob;
+        this.deleted = false;
     }
 
     public Student(String name,
@@ -45,6 +50,7 @@ public class Student {
         this.name = name;
         this.email = email;
         this.dob = dob;
+        this.deleted = false;
     }
 
     public Long getId() {
@@ -85,5 +91,13 @@ public class Student {
 
     public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

@@ -20,6 +20,11 @@ public class StudentController {
         return studentService.getStudents();
     }
 
+    @GetMapping("/deleted")
+    public List<Student> getDeletedStudents() {
+        return studentService.getDeletedStudents();
+    }
+
     @PostMapping
     public void registerStudent(@RequestBody Student student) {
         studentService.addNewStudent(student);
@@ -36,4 +41,6 @@ public class StudentController {
                               @RequestParam(required = false) String email){
         studentService.updateStudent(studentId, name, email);
     }
+
+
 }
