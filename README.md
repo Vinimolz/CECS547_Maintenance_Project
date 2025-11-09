@@ -143,17 +143,17 @@ curl -X GET http://localhost:8080/api/v1/student
 
 Update name:
 ```bash
-curl -X PUT "http://localhost:8080/api/v1/student/1?name=Jane%20Doe"
+curl -X PUT http://localhost:8080/api/v1/student/1 -d "name=Jane Doe"
 ```
 
 Update email:
 ```bash
-curl -X PUT "http://localhost:8080/api/v1/student/1?email=jane.doe@example.com"
+curl -X PUT http://localhost:8080/api/v1/student/1 -d "email=jane.doe@example.com"
 ```
 
 Update both:
 ```bash
-curl -X PUT "http://localhost:8080/api/v1/student/1?name=Jane%20Doe&email=jane.doe@example.com"
+curl -X PUT http://localhost:8080/api/v1/student/1 -d "name=Jane Doe&email=jane.doe@example.com"
 ```
 
 ---
@@ -206,10 +206,10 @@ curl -X POST http://localhost:8080/api/v1/student \
 curl -X GET http://localhost:8080/api/v1/student
 
 # 3. Update the student (use ID from step 2, likely ID=1)
-curl -X PUT "http://localhost:8080/api/v1/student/1?name=Alice%20Johnson"
+curl -X PUT http://localhost:8080/api/v1/student/1 -d "name=Alice Johnson"
 
 # 4. Update again
-curl -X PUT "http://localhost:8080/api/v1/student/1?email=alice.johnson@example.com"
+curl -X PUT http://localhost:8080/api/v1/student/1 -d "email=alice.johnson@example.com"
 
 # 5. View student history (should show 2 versions)
 curl -X GET http://localhost:8080/api/v1/student/1/history
