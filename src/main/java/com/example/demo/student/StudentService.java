@@ -12,10 +12,12 @@ import java.util.Optional;
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final StudentHistoryRepository studentHistoryRepository;
 
     @Autowired
-    public StudentService(StudentRepository studentRepository) {
+    public StudentService(StudentRepository studentRepository, StudentHistoryRepository studentHistoryRepository) {
         this.studentRepository = studentRepository;
+        this.studentHistoryRepository = studentHistoryRepository;
     }
 
     // Get only active (non-deleted) students
@@ -43,6 +45,10 @@ public class StudentService {
         Student student = studentRepository.findActiveStudentById(studentId)
                 .orElseThrow(() -> new IllegalStateException(
                         "Student with ID " + studentId + " does not exist or is already deleted"));
+
+        // Save to history
+        StudentHistory history = new StudentHistory(student, "DELETE");
+        studentHistoryRepository.save(history);
 
         student.setDeleted(true);
         studentRepository.save(student);
@@ -78,8 +84,11 @@ public class StudentService {
                 .orElseThrow(() -> new IllegalStateException(
                         "Student with ID " + studentId + " does not exist or is deleted"));
 
+        boolean changed = false;
+
         if (name != null && name.length() > 0 && !Objects.equals(name, student.getName())) {
             student.setName(name);
+            changed = true;
         }
 
         if (email != null && email.length() > 0 && !Objects.equals(email, student.getEmail())) {
@@ -88,8 +97,19 @@ public class StudentService {
                 throw new IllegalStateException("email exist");
             }
             student.setEmail(email);
+            changed = true;
         }
 
-        studentRepository.save(student);
+        if (changed) {
+            // Save old version to history
+            StudentHistory history = new StudentHistory(student, "UPDATE");
+            studentHistoryRepository.save(history);
+
+            studentRepository.save(student);
+        }
+    }
+
+    public List<StudentHistory> getStudentHistory(Long studentId) {
+        return studentHistoryRepository.findByStudentIdOrderByChangedAtDesc(studentId);
     }
 }

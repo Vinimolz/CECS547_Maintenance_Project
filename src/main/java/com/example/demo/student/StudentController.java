@@ -42,5 +42,8 @@ public class StudentController {
         studentService.updateStudent(studentId, name, email);
     }
 
-
+    @GetMapping("/{studentId}/history")
+    public List<StudentHistory> getStudentHistory(@PathVariable("studentId") Long studentId) {
+        return studentService.getStudentHistory(studentId);
+    }
 }
