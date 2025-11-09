@@ -13,16 +13,27 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final StudentHistoryRepository studentHistoryRepository;
+    private final ActivityLogService activityLogService;
 
     @Autowired
-    public StudentService(StudentRepository studentRepository, StudentHistoryRepository studentHistoryRepository) {
+    public StudentService(
+            StudentRepository studentRepository,
+            StudentHistoryRepository studentHistoryRepository,
+            ActivityLogService activityLogService
+    ) {
         this.studentRepository = studentRepository;
         this.studentHistoryRepository = studentHistoryRepository;
+        this.activityLogService = activityLogService;
     }
 
     // Get only active (non-deleted) students
     public List<Student> getStudents() {
         return studentRepository.findAllActiveStudents();
+    }
+
+    // Get student history by id
+    public List<StudentHistory> getStudentHistory(Long studentId) {
+        return studentHistoryRepository.findByStudentIdOrderByChangedAtDesc(studentId);
     }
 
     // Get deleted students
@@ -37,6 +48,9 @@ public class StudentService {
         }
         student.setDeleted(false); // Ensure new students are not marked as deleted
         studentRepository.save(student);
+
+        //Log student
+        activityLogService.logAction("CREATE", student.getId());
     }
 
     // Soft delete - just mark as deleted
@@ -52,6 +66,9 @@ public class StudentService {
 
         student.setDeleted(true);
         studentRepository.save(student);
+
+        //Log student
+        activityLogService.logAction("DELETE", student.getId());
     }
 
     // Restore a soft-deleted student
@@ -86,12 +103,12 @@ public class StudentService {
 
         boolean changed = false;
 
-        if (name != null && name.length() > 0 && !Objects.equals(name, student.getName())) {
+        if (name != null && !name.isEmpty() && !Objects.equals(name, student.getName())) {
             student.setName(name);
             changed = true;
         }
 
-        if (email != null && email.length() > 0 && !Objects.equals(email, student.getEmail())) {
+        if (email != null && !email.isEmpty() && !Objects.equals(email, student.getEmail())) {
             Optional<Student> studentOptional = studentRepository.findStudentByEmail(email);
             if (studentOptional.isPresent()) {
                 throw new IllegalStateException("email exist");
@@ -106,10 +123,9 @@ public class StudentService {
             studentHistoryRepository.save(history);
 
             studentRepository.save(student);
-        }
-    }
 
-    public List<StudentHistory> getStudentHistory(Long studentId) {
-        return studentHistoryRepository.findByStudentIdOrderByChangedAtDesc(studentId);
+            //Log student
+            activityLogService.logAction("UPDATE", student.getId());
+        }
     }
 }
