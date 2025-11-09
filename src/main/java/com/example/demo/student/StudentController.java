@@ -25,14 +25,14 @@ public class StudentController {
         return studentService.getDeletedStudents();
     }
 
+    @GetMapping("/{studentId}/history")
+    public List<StudentHistory> getStudentHistory(@PathVariable("studentId") Long studentId) {
+        return studentService.getStudentHistory(studentId);
+    }
+
     @PostMapping
     public void registerStudent(@RequestBody Student student) {
         studentService.addNewStudent(student);
-    }
-
-    @DeleteMapping(path = "{studentId}")
-    public void deleteStudent(@PathVariable("studentId") Long studentId) {
-        studentService.deleteStudent(studentId);
     }
 
     @PutMapping(path = "{studentId}")
@@ -42,8 +42,13 @@ public class StudentController {
         studentService.updateStudent(studentId, name, email);
     }
 
-    @GetMapping("/{studentId}/history")
-    public List<StudentHistory> getStudentHistory(@PathVariable("studentId") Long studentId) {
-        return studentService.getStudentHistory(studentId);
+    @PutMapping("/{studentId}/restore")
+    public void restoreStudent(@PathVariable("studentId") Long studentId) {
+        studentService.restoreStudent(studentId);
+    }
+
+    @DeleteMapping(path = "{studentId}")
+    public void deleteStudent(@PathVariable("studentId") Long studentId) {
+        studentService.deleteStudent(studentId);
     }
 }

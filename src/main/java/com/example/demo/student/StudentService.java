@@ -84,6 +84,7 @@ public class StudentService {
 
         student.setDeleted(false);
         studentRepository.save(student);
+        activityLogService.logAction("RESTORE", studentId);
     }
 
     // Hard delete - permanently remove from database (optional, for admin use)
@@ -103,8 +104,8 @@ public class StudentService {
 
         boolean changed = false;
 
+        // Check if changes are needed
         if (name != null && !name.isEmpty() && !Objects.equals(name, student.getName())) {
-            student.setName(name);
             changed = true;
         }
 
@@ -113,18 +114,24 @@ public class StudentService {
             if (studentOptional.isPresent()) {
                 throw new IllegalStateException("email exist");
             }
-            student.setEmail(email);
             changed = true;
         }
 
         if (changed) {
-            // Save old version to history
+            // Save OLD version to history FIRST
             StudentHistory history = new StudentHistory(student, "UPDATE");
             studentHistoryRepository.save(history);
 
-            studentRepository.save(student);
+            // NOW make the changes
+            if (name != null && !name.isEmpty() && !Objects.equals(name, student.getName())) {
+                student.setName(name);
+            }
 
-            //Log student
+            if (email != null && !email.isEmpty() && !Objects.equals(email, student.getEmail())) {
+                student.setEmail(email);
+            }
+
+            studentRepository.save(student);
             activityLogService.logAction("UPDATE", student.getId());
         }
     }
