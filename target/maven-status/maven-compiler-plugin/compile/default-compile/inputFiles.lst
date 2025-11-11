@@ -1,6 +1,11 @@
 C:\Users\Vinicius Molz\CECS547_Project\SpringBoot_CRUD_Postgre_Tutorial\src\main\java\com\example\demo\student\Student.java
 C:\Users\Vinicius Molz\CECS547_Project\SpringBoot_CRUD_Postgre_Tutorial\src\main\java\com\example\demo\student\StudentController.java
+C:\Users\Vinicius Molz\CECS547_Project\SpringBoot_CRUD_Postgre_Tutorial\src\main\java\com\example\demo\student\StudentHistory.java
+C:\Users\Vinicius Molz\CECS547_Project\SpringBoot_CRUD_Postgre_Tutorial\src\main\java\com\example\demo\student\ActivityLog.java
 C:\Users\Vinicius Molz\CECS547_Project\SpringBoot_CRUD_Postgre_Tutorial\src\main\java\com\example\demo\DemoApplication.java
-C:\Users\Vinicius Molz\CECS547_Project\SpringBoot_CRUD_Postgre_Tutorial\src\main\java\com\example\demo\student\StudentConfig.java
+C:\Users\Vinicius Molz\CECS547_Project\SpringBoot_CRUD_Postgre_Tutorial\src\main\java\com\example\demo\student\ActivityLogController.java
 C:\Users\Vinicius Molz\CECS547_Project\SpringBoot_CRUD_Postgre_Tutorial\src\main\java\com\example\demo\student\StudentRepository.java
+C:\Users\Vinicius Molz\CECS547_Project\SpringBoot_CRUD_Postgre_Tutorial\src\main\java\com\example\demo\student\ActivityLogService.java
 C:\Users\Vinicius Molz\CECS547_Project\SpringBoot_CRUD_Postgre_Tutorial\src\main\java\com\example\demo\student\StudentService.java
+C:\Users\Vinicius Molz\CECS547_Project\SpringBoot_CRUD_Postgre_Tutorial\src\main\java\com\example\demo\student\ActivityLogRepository.java
+C:\Users\Vinicius Molz\CECS547_Project\SpringBoot_CRUD_Postgre_Tutorial\src\main\java\com\example\demo\student\StudentHistoryRepository.java
