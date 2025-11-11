@@ -3,8 +3,6 @@
 ## Original Project
 Cloned from: https://github.com/jonsungwoo/SpringBoot_CRUD_Postgre_Tutorial
 
-# Student Management System with Soft Delete & History Tracking
-
 A comprehensive Spring Boot application that performs CRUD operations on student records with enhanced features including soft delete, version history tracking, and activity logging.
 
 ## 📋 Table of Contents
@@ -24,8 +22,6 @@ A comprehensive Spring Boot application that performs CRUD operations on student
 ## 🎯 Project Overview
 
 This project is an enhancement of a basic Spring Boot CRUD application. The original project provided simple create, read, update, and delete operations for student records.
-
-**Original Project Source**: [Add your source link here]
 
 ### Enhancements Added:
 1. **Soft Delete** - Records are marked as deleted rather than permanently removed
@@ -386,17 +382,3 @@ project-root/
 - All timestamps in `StudentHistory` and `ActivityLog` use `LocalDateTime` with system time
 - Email addresses must be unique across all students (both active and deleted)
 - The `age` field in `Student` entity is calculated dynamically from date of birth
-
----
-
-## 👤 Author
-
-[Your Name]  
-[Course Name & Number]  
-[Date]
-
----
-
-## 📄 License
-
-This project is for educational purposes as part of [Course Name].
