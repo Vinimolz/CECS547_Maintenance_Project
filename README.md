@@ -3,282 +3,400 @@
 ## Original Project
 Cloned from: https://github.com/jonsungwoo/SpringBoot_CRUD_Postgre_Tutorial
 
-## New Features Added
-- **Soft Delete functionality** - Deleted records are marked as deleted but retained in database
-- **Student history/versioning** - Track all modifications to student records
-- **Activity logging for CRUD operations** - Log all create, update, and delete actions
+# Student Management System with Soft Delete & History Tracking
 
-## Technologies
-- Spring Boot 3.0.6
-- PostgreSQL 16
-- Java 21
-- Maven
+A comprehensive Spring Boot application that performs CRUD operations on student records with enhanced features including soft delete, version history tracking, and activity logging.
+
+## 📋 Table of Contents
+- [Project Overview](#project-overview)
+- [Features Implemented](#features-implemented)
+- [Technologies Used](#technologies-used)
+- [Prerequisites](#prerequisites)
+- [Setup Instructions](#setup-instructions)
+- [Running the Application](#running-the-application)
+- [API Endpoints](#api-endpoints)
+- [Testing](#testing)
+- [Project Structure](#project-structure)
+- [Maintenance & Testing Documentation](#maintenance--testing-documentation)
 
 ---
 
-## Getting Started
+## 🎯 Project Overview
 
-### Prerequisites
-- Java 21 (or Java 17+)
-- PostgreSQL 16 installed and running
-- Maven
+This project is an enhancement of a basic Spring Boot CRUD application. The original project provided simple create, read, update, and delete operations for student records.
 
-### Setup Instructions
+**Original Project Source**: [Add your source link here]
 
-1. **Clone the repository**
+### Enhancements Added:
+1. **Soft Delete** - Records are marked as deleted rather than permanently removed
+2. **Version History/Versioning** - All updates and deletions are tracked in a history table
+3. **Activity Logging** - All actions (CREATE, UPDATE, DELETE, RESTORE) are logged with timestamps
+4. **Restore Functionality** - Ability to restore soft-deleted students
+
+These features are essential for systems like banking or social media where data retention and audit trails are critical.
+
+---
+
+## ✨ Features Implemented
+
+### Core CRUD Operations
+- ✅ Create new student records
+- ✅ Read/List all active students
+- ✅ Update student information (name, email)
+- ✅ Delete student records (soft delete)
+
+### Enhanced Features
+- ✅ **Soft Delete**: Students are marked as deleted but remain in database
+- ✅ **Student History**: Tracks all changes with old values before updates/deletes
+- ✅ **Activity Logging**: Records all operations with timestamp and user
+- ✅ **Restore Deleted Students**: Ability to undo soft deletes
+- ✅ **View Deleted Students**: Separate endpoint to view all soft-deleted records
+- ✅ **Duplicate Email Validation**: Prevents multiple students with same email
+
+---
+
+## 🛠️ Technologies Used
+
+- **Java 17+**
+- **Spring Boot 3.x**
+- **Spring Data JPA**
+- **PostgreSQL**
+- **Maven**
+- **JUnit 5** (for testing)
+- **AssertJ** (for test assertions)
+
+---
+
+## 📦 Prerequisites
+
+Before running this application, ensure you have:
+
+- Java Development Kit (JDK) 17 or higher
+- Maven 3.6+
+- PostgreSQL 12+
+- pgAdmin (optional, for database management)
+- Git Bash or terminal with curl support (for API testing)
+
+---
+
+## 🚀 Setup Instructions
+
+### 1. Clone the Repository
 ```bash
-   git clone 
-   cd 
+git clone [your-repository-url]
+cd [your-project-directory]
 ```
 
-2. **Create the database**
-   
-   Open pgAdmin or psql and run:
+### 2. Configure Database
+
+Create a PostgreSQL database:
 ```sql
-   CREATE DATABASE studentdb;
+CREATE DATABASE student_db;
 ```
 
-3. **Configure database connection**
-   
-   Edit `src/main/resources/application.properties` with your PostgreSQL credentials:
+Update `src/main/resources/application.properties` with your database credentials:
 ```properties
-   spring.datasource.url=jdbc:postgresql://localhost:5432/studentdb
-   spring.datasource.username=postgres
-   spring.datasource.password=YOUR_PASSWORD
+spring.datasource.url=jdbc:postgresql://localhost:5432/student_db
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+spring.jpa.hibernate.ddl-auto=update
 ```
 
-4. **Run the application**
+### 3. Reset Database (Optional)
+
+To start with a clean database, run the SQL script:
 ```bash
-   mvn spring-boot:run
+psql -U your_username -d student_db -f reset_database.sql
 ```
 
-   The application will start on `http://localhost:8080`
-
-5. **Verify setup**
-   
-   Open browser and navigate to:
-```
-   http://localhost:8080/api/v1/student
-```
-   You should see an empty array `[]`
-
----
-
-## Initial Data Setup (Optional)
-
-If you want to populate the database with sample students on startup, create this file:
-
-**File:** `src/main/java/com/example/demo/student/StudentConfig.java`
-```java
-package com.example.demo.student;
-
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import java.time.LocalDate;
-import java.util.List;
-
-import static java.time.Month.*;
-
-@Configuration
-public class StudentConfig {
-
-    @Bean
-    CommandLineRunner commandLineRunner(StudentRepository repository){
-        return args -> {
-            Student mariam = new Student(
-                    "Mariam",
-                    "mariam.jamal@gmail.com",
-                    LocalDate.of(2000, JANUARY, 5)
-            );
-            Student alex = new Student(
-                    "Alex",
-                    "alex@gmail.com",
-                    LocalDate.of(2004, JANUARY, 5)
-            );
-
-            repository.saveAll(
-                    List.of(mariam, alex)
-            );
-        };
-    }
-}
-```
-
-**Note:** This file will insert the two sample students every time you restart the application. Delete this file if you don't want auto-population.
-
----
-
-## API Endpoints & Testing
-
-### Base URL
-```
-http://localhost:8080/api/v1
+Or run the SQL directly in pgAdmin:
+```sql
+TRUNCATE TABLE activity_log RESTART IDENTITY CASCADE;
+TRUNCATE TABLE student_history RESTART IDENTITY CASCADE;
+TRUNCATE TABLE student RESTART IDENTITY CASCADE;
+ALTER SEQUENCE student_sequence RESTART WITH 1;
+ALTER SEQUENCE student_history_history_id_seq RESTART WITH 1;
+ALTER SEQUENCE activity_log_log_id_seq RESTART WITH 1;
 ```
 
 ---
 
-### 1. **Create a Student**
+## ▶️ Running the Application
+
+### Start the Application
+```bash
+# Using Maven wrapper
+./mvnw spring-boot:run
+
+# Or using Maven directly
+mvn spring-boot:run
+```
+
+The application will start on `http://localhost:8080`
+
+### Verify Application is Running
+Open your browser and navigate to:
+```
+http://localhost:8080/api/v1/student
+```
+
+You should see an empty array `[]` if the database is clean.
+
+---
+
+## 🔌 API Endpoints
+
+### Student Management
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/student` | Get all active students |
+| GET | `/api/v1/student/deleted` | Get all soft-deleted students |
+| GET | `/api/v1/student/{id}/history` | Get history of changes for a student |
+| POST | `/api/v1/student` | Create a new student |
+| PUT | `/api/v1/student/{id}?name=X&email=Y` | Update student information |
+| PUT | `/api/v1/student/{id}/restore` | Restore a soft-deleted student |
+| DELETE | `/api/v1/student/{id}` | Soft delete a student |
+
+### Activity Logs
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/activity-logs` | Get all activity logs |
+
+### Example Requests
+
+**Create a Student:**
 ```bash
 curl -X POST http://localhost:8080/api/v1/student \
   -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Doe",
-    "email": "john.doe@example.com",
-    "dob": "2002-05-15"
-  }'
+  -d '{"name":"John Doe","email":"john@test.com","dob":"2000-01-15"}'
 ```
 
----
-
-### 2. **Get All Active Students**
+**Update a Student:**
 ```bash
-curl -X GET http://localhost:8080/api/v1/student
+curl -X PUT "http://localhost:8080/api/v1/student/1?name=John%20Updated&email=john.updated@test.com"
 ```
 
----
-
-### 3. **Update a Student**
-
-Update name:
-```bash
-curl -X PUT http://localhost:8080/api/v1/student/1 -d "name=Jane Doe"
-```
-
-Update email:
-```bash
-curl -X PUT http://localhost:8080/api/v1/student/1 -d "email=jane.doe@example.com"
-```
-
-Update both:
-```bash
-curl -X PUT http://localhost:8080/api/v1/student/1 -d "name=Jane Doe&email=jane.doe@example.com"
-```
-
----
-
-### 4. **Soft Delete a Student**
+**Delete a Student (Soft Delete):**
 ```bash
 curl -X DELETE http://localhost:8080/api/v1/student/1
 ```
-*Note: This marks the student as deleted but retains the record in the database*
 
----
-
-### 5. **Get All Deleted Students**
+**Restore a Student:**
 ```bash
-curl -X GET http://localhost:8080/api/v1/student/deleted
+curl -X PUT http://localhost:8080/api/v1/student/1/restore
+```
+
+**Get Student History:**
+```bash
+curl http://localhost:8080/api/v1/student/1/history
 ```
 
 ---
 
-### 6. **View Student History**
+## 🧪 Testing
+
+### 1. Automated API Testing (Bash Script)
+
+Run the comprehensive API testing script that covers all endpoints:
+
 ```bash
-curl -X GET http://localhost:8080/api/v1/student/1/history
-```
-*Shows all previous versions of a student (tracks updates and deletes)*
+# Make script executable (first time only)
+chmod +x test_api.sh
 
----
-
-### 7. **View Activity Logs**
-```bash
-curl -X GET http://localhost:8080/api/v1/activity-logs
-```
-*Shows all CREATE, UPDATE, and DELETE operations*
-
----
-
-## Testing Workflow Example
-
-Here's a complete workflow to test all features:
-```bash
-# 1. Create a student
-curl -X POST http://localhost:8080/api/v1/student \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Alice Smith",
-    "email": "alice@example.com",
-    "dob": "2001-03-20"
-  }'
-
-# 2. View all students
-curl -X GET http://localhost:8080/api/v1/student
-
-# 3. Update the student (use ID from step 2, likely ID=1)
-curl -X PUT http://localhost:8080/api/v1/student/1 -d "name=Alice Johnson"
-
-# 4. Update again
-curl -X PUT http://localhost:8080/api/v1/student/1 -d "email=alice.johnson@example.com"
-
-# 5. View student history (should show 2 versions)
-curl -X GET http://localhost:8080/api/v1/student/1/history
-
-# 6. Soft delete the student
-curl -X DELETE http://localhost:8080/api/v1/student/1
-
-# 7. View active students (should not include deleted student)
-curl -X GET http://localhost:8080/api/v1/student
-
-# 8. View deleted students (should show the deleted student)
-curl -X GET http://localhost:8080/api/v1/student/deleted
-
-# 9. View activity logs (should show all operations)
-curl -X GET http://localhost:8080/api/v1/activity-logs
+# Run all tests
+./test_api.sh
 ```
 
+**What the script tests:**
+- Creating multiple students
+- Updating student information
+- Duplicate email validation
+- Soft delete operations
+- Restore functionality
+- Student history tracking
+- Activity logging
+- Error handling for non-existent students
+- Complex workflows
+
+### 2. JUnit Integration Tests
+
+Run automated integration tests:
+
+```bash
+# Run all tests
+./mvnw test
+
+# Or
+mvn test
+```
+
+**Test Coverage (21 test cases):**
+- ✅ Student creation and duplicate validation
+- ✅ Reading active and deleted students
+- ✅ Updating student information
+- ✅ Soft delete functionality
+- ✅ Restore operations
+- ✅ History tracking
+- ✅ Activity logging
+- ✅ Complete lifecycle workflows
+
+**View Test Results:**
+```bash
+# Test reports are generated in:
+target/surefire-reports/
+```
+
+### 3. Manual Browser Testing
+
+Test GET endpoints directly in your browser:
+
+**View all active students:**
+```
+http://localhost:8080/api/v1/student
+```
+
+**View deleted students:**
+```
+http://localhost:8080/api/v1/student/deleted
+```
+
+**View student history:**
+```
+http://localhost:8080/api/v1/student/1/history
+```
+
+**View activity logs:**
+```
+http://localhost:8080/api/v1/activity-logs
+```
+
 ---
 
-## Database Tables
+## 📁 Project Structure
 
-The application creates these tables:
+```
+project-root/
+├── src/
+│   ├── main/
+│   │   └── java/com/example/demo/student/
+│   │       ├── Student.java                    # Student entity
+│   │       ├── StudentRepository.java          # Database queries for students
+│   │       ├── StudentService.java             # Business logic
+│   │       ├── StudentController.java          # REST API endpoints
+│   │       ├── StudentHistory.java             # History tracking entity
+│   │       ├── StudentHistoryRepository.java   # History queries
+│   │       ├── ActivityLog.java                # Activity logging entity
+│   │       ├── ActivityLogRepository.java      # Activity log queries
+│   │       ├── ActivityLogService.java         # Logging service
+│   │       └── ActivityLogController.java      # Activity log endpoint
+│   └── test/
+│       └── java/com/example/demo/student/
+│           └── StudentServiceIntegrationTest.java  # Integration tests
+├── test_api.sh                 # Bash API testing script
+├── reset_database.sql          # Database reset script
+├── pom.xml                     # Maven configuration
+└── README.md                   # This file
+```
 
-- **`student`** - Main student records with soft delete flag
-- **`student_history`** - Historical versions of student records
-- **`activity_log`** - Audit trail of all operations
+### Key Components
+
+**Entities:**
+- `Student` - Main student record with soft delete flag
+- `StudentHistory` - Tracks old versions before updates/deletes
+- `ActivityLog` - Logs all CRUD operations
+
+**Repositories:**
+- Custom queries for finding active/deleted students
+- History retrieval ordered by timestamp
+
+**Service Layer:**
+- `StudentService` - Core business logic with transaction management
+- `ActivityLogService` - Centralized activity logging
+
+**Controllers:**
+- REST endpoints with proper HTTP methods
+- Request/response handling
 
 ---
 
-## Features Implementation Details
+## 📊 Maintenance & Testing Documentation
 
-### Soft Delete
-- Deleted students are marked with `deleted = true` flag
-- Normal queries filter out deleted students
-- Deleted students can be viewed via `/api/v1/student/deleted`
-- Records remain in database for audit purposes
+### Type of Maintenance Performed
 
-### Versioning
-- Before any UPDATE or DELETE, the old version is saved to `student_history` table
-- Each history record includes: old values, operation type, timestamp, and user
-- View complete history via `/api/v1/student/{id}/history`
+**Adaptive Maintenance**: Enhanced the existing CRUD application with new features to meet changing business requirements:
+- Added soft delete capability for data retention
+- Implemented version history for audit trails
+- Created activity logging for compliance
 
-### Activity Logging
-- All CREATE, UPDATE, and DELETE operations are logged
-- Each log includes: action type, student ID, username (hardcoded as "admin"), and timestamp
-- View all logs via `/api/v1/activity-logs`
+### Testing Activities Performed
+
+#### 1. **Integration Testing**
+- Created 21 JUnit integration tests covering all service methods
+- Tests interact with actual database using Spring Boot test context
+- All tests use `@Transactional` to ensure clean state between tests
+
+**Coverage includes:**
+- CRUD operations validation
+- Business rule enforcement (duplicate emails)
+- History tracking verification
+- Activity logging verification
+- Error handling and edge cases
+
+#### 2. **API Endpoint Testing**
+- Comprehensive bash script with 14 test scenarios
+- Tests all REST endpoints with various inputs
+- Validates both success and failure cases
+- Tests complex workflows (create → update → delete → restore)
+
+#### 3. **Manual Testing**
+- Browser-based testing of GET endpoints
+- Visual verification of JSON responses
+- Database inspection using pgAdmin
+
+#### 4. **Regression Testing**
+- Ensured existing CRUD operations still work after enhancements
+- Verified no breaking changes to original functionality
+- All 19 integration tests pass consistently
+
+### Activities Not Performed
+
+**Performance Testing**: Not performed due to small dataset and local development environment. In production, would need load testing for concurrent operations.
+
+**Security Testing**: Authentication/authorization not implemented as project focuses on CRUD functionality. In production would need JWT tokens or OAuth.
+
+**UI Testing**: Application is backend-only (REST API). Frontend testing would be needed if UI is added.
+
+### Challenges Faced
+
+1. **Database Sequence Management**: After multiple tests, ID sequences would increment to high numbers. Resolved by creating database reset script with sequence restart commands.
+
+2. **Transaction Management**: Ensuring history is saved BEFORE entity updates required careful use of `@Transactional` annotation and proper ordering of save operations.
+
+3. **Test Data Cleanup**: Initially tests were interfering with each other. Solved by using `@Transactional` rollback and `@BeforeEach` cleanup methods.
+
+4. **Soft Delete Query Logic**: Required custom JPQL queries to filter active vs deleted students. Implemented `@Query` annotations in repositories.
 
 ---
 
-## Troubleshooting
+## 📝 Notes
 
-### Application won't start
-- Verify PostgreSQL is running
-- Check database credentials in `application.properties`
-- Ensure database `studentdb` exists
-
-### Port 8080 already in use
-- Stop other applications using port 8080
-- Or change port in `application.properties`: `server.port=8081`
-
-### Database connection errors
-- Verify PostgreSQL service is running
-- Test connection: `psql -U postgres -d studentdb`
+- The application uses **soft delete** - records are never permanently removed unless using the `hardDeleteStudent` method (admin only)
+- All timestamps in `StudentHistory` and `ActivityLog` use `LocalDateTime` with system time
+- Email addresses must be unique across all students (both active and deleted)
+- The `age` field in `Student` entity is calculated dynamically from date of birth
 
 ---
 
-## Author
-Vinicius Molz - CECS 547 Software Maintenance Project
+## 👤 Author
 
-## Acknowledgments
-- Original project by jonsungwoo
-- Enhanced with soft delete, versioning, and activity logging features
+[Your Name]  
+[Course Name & Number]  
+[Date]
+
+---
+
+## 📄 License
+
+This project is for educational purposes as part of [Course Name].
